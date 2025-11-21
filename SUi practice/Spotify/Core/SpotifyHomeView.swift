@@ -6,20 +6,35 @@
 //
 
 import SwiftUI
-import SDWebImageSwiftUI
+import SwiftfulUI
 
 struct SpotifyHomeView: View {
     
     @State private var currentUser: User? = nil
     @State private var selectedCategory: Category? = nil
+    @State private var products: [Product] = []
     
     var body: some View {
         ZStack {
             Color.spotifyBlack.ignoresSafeArea()
             
             ScrollView(.vertical) {
-                LazyVStack(spacing: 2, pinnedViews: [.sectionHeaders], content: {
-                    Section {
+                LazyVStack(
+                    spacing: 2,
+                    pinnedViews: [.sectionHeaders],
+                    content: {
+                        Section {
+                            
+                            VStack {
+                                recentsSection
+                                
+                                if let product = products.first {
+                                    newReleaseSection(product: product)
+                                }
+
+                        }
+                        .padding(.horizontal, 16)
+                        
                         ForEach(0..<10) { _ in
                             Rectangle()
                                 .frame(width: 200, height: 200)
@@ -37,6 +52,7 @@ struct SpotifyHomeView: View {
         .task {
             await getData()
         }
+        .toolbar(.hidden, for: .navigationBar)
     }
     
     var header: some View {
@@ -53,12 +69,14 @@ struct SpotifyHomeView: View {
                         }
                 }
             }
-            .frame(width: 30, height: 30)
+            .frame(width: 35, height: 35)
             
             ScrollView(.horizontal) {
                 HStack (spacing: 8) {
                     ForEach(Category.allCases, id: \.self) { category in
-                        SpotifyCategoryCell(title: category.rawValue.capitalized, isSelected: category == selectedCategory)
+                        SpotifyCategoryCell(
+                            title: category.rawValue.capitalized,
+                            isSelected: category == selectedCategory)
                             .onTapGesture {
                                 selectedCategory = category
                             }
@@ -73,10 +91,30 @@ struct SpotifyHomeView: View {
         .background(Color.spotifyBlack)
     }
     
+    var recentsSection: some View {
+        NonLazyVGrid(columns: 2, alignment: .center, spacing: 10, items: products) { product in
+            if let product {
+                SpotifyRecentsCell(imageName: product.firstImage, title: product.title)
+            }
+        }
+    }
+    
+    private func newReleaseSection(product: Product) -> some View {
+        SpotifyNewReleaseCell(
+            imageName: product.firstImage,
+            headline: product.brand,
+            subheadline: product.category,
+            title: product.title,
+            subtitle: product.description,
+            addToPlaylistPressed: {},
+            onPlayPressed: {}
+        )
+    }
+    
     private func getData() async {
         do {
             currentUser = try await DatabaseHelper().getUsers().first
-//            products = try await DatabaseHelper().getProducts()
+            products = try await Array(DatabaseHelper().getProducts().prefix(8))
         } catch {
             
         }
