@@ -13,6 +13,7 @@ struct SpotifyHomeView: View {
     @State private var currentUser: User? = nil
     @State private var selectedCategory: Category? = nil
     
+    
     var body: some View {
         ZStack {
             Color.spotifyBlack.ignoresSafeArea()
