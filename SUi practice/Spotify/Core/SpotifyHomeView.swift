@@ -14,6 +14,7 @@ struct SpotifyHomeView: View {
     @State private var selectedCategory: Category? = nil
     @State private var products: [Product] = []
     
+    
     var body: some View {
         ZStack {
             Color.spotifyBlack.ignoresSafeArea()
