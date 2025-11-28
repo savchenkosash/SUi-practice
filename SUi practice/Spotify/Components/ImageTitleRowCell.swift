@@ -22,7 +22,6 @@ struct ImageTitleRowCell: View {
                 .foregroundStyle(.spotifyLightGray)
                 .lineLimit(2)
                 .padding(4)
-            
         }
         .frame(width: imageSize)
     }
@@ -32,7 +31,28 @@ struct ImageTitleRowCell: View {
     ZStack {
         Color.spotifyBlack.ignoresSafeArea()
         ImageTitleRowCell()
-
     }
     
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
