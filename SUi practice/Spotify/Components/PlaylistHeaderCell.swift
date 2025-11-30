@@ -6,9 +6,9 @@
 //
 
 import SwiftUI
+import SwiftfulUI
 
 struct PlaylistHeaderCell: View {
-    
     
     var height: CGFloat = 300
     var title: String = "Some playlists title goes here"
@@ -18,12 +18,16 @@ struct PlaylistHeaderCell: View {
     
     
     var body: some View {
-        ImageLoaderView(urlString: imageName)
+        Rectangle()
+            .opacity(0)
+            .overlay {
+                ImageLoaderView(urlString: imageName)
+            }
             .overlay(
-                VStack (alignment: .leading, spacing: 8) {
+                VStack(alignment: .leading, spacing: 8) {
                     Text(subtitle)
                         .font(.headline)
-                    Text(subtitle)
+                    Text(title)
                         .font(.largeTitle)
                         .fontWeight(.bold)
                 }
@@ -31,9 +35,13 @@ struct PlaylistHeaderCell: View {
                 .padding(16)
                 .frame(maxWidth: .infinity)
                 .background(
-                    LinearGradient(colors: [shadowColor.opacity(0), shadowColor], startPoint: .top, endPoint: .bottom)
+                    LinearGradient(
+                        colors: [shadowColor.opacity(0), shadowColor],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
                 )
-                ,alignment: .bottomLeading
+                , alignment: .bottomLeading
             )
             .asStretchyHeader(startingHeight: height)
     }
