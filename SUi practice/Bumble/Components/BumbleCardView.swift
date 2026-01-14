@@ -16,10 +16,6 @@ struct BumbleCardView: View {
     var onCheckMarkPressed: (() -> Void)? = nil
     var onSendAComplimentPressed: (() -> Void)? = nil
     var onHideAndReportPressed: (() -> Void)? = nil
-
-
-
-    
     
     @State private var cardFrame: CGRect = .zero
     
