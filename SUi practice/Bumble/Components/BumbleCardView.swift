@@ -11,10 +11,10 @@ import SwiftfulUI
 struct BumbleCardView: View {
     
     var user: User = .mock
+    var onSendAComplimentPressed: (() -> Void)? = nil
     var onSuperLikePressed: (() -> Void)? = nil
     var onXmarkPressed: (() -> Void)? = nil
-    var onCheckMarkPressed: (() -> Void)? = nil
-    var onSendAComplimentPressed: (() -> Void)? = nil
+    var onCheckmarkPressed: (() -> Void)? = nil
     var onHideAndReportPressed: (() -> Void)? = nil
     
     @State private var cardFrame: CGRect = .zero
@@ -220,7 +220,7 @@ struct BumbleCardView: View {
                     )
                     .frame(width: 60, height: 60)
                     .onTapGesture {
-                        onCheckMarkPressed?()
+                        onCheckmarkPressed?()
                     }
             }
             

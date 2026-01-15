@@ -12,30 +12,24 @@ import SwiftfulRouting
 struct BumbleHomeView: View {
     
     @Environment(\.router) var router
+    
     @State private var filters: [String] = ["Everyone", "Trending"]
     @AppStorage("bumble_home_filter") private var selectedFilter = "Everyone"
-    
     @State private var allUsers: [User] = []
     @State private var selectedIndex: Int = 0
-    @State private var cardOffsets: [Int:Bool] = [:] // UserID, Direction is right = TRUE
+    @State private var cardOffsets: [Int:Bool] = [:] // UserId : (Direction is Right == TRUE)
     @State private var currentSwipeOffset: CGFloat = 0
 
-    
     var body: some View {
         ZStack {
             Color.bumbleWhite.ignoresSafeArea()
             
             VStack(spacing: 12) {
-                
                 header
                 
                 BumbleFilterView(options: filters, selection: $selectedFilter)
-                    .background(
-                        Divider(), alignment: .bottom
-                    )
-                
-//                BumbleCardView()
-                
+                    .background(Divider(), alignment: .bottom)
+                                
                 ZStack {
                     if !allUsers.isEmpty {
                         ForEach(Array(allUsers.enumerated()), id: \.offset) { (index, user) in
@@ -43,7 +37,7 @@ struct BumbleHomeView: View {
                             let isPrevious = (selectedIndex - 1) == index
                             let isCurrent = selectedIndex == index
                             let isNext = (selectedIndex + 1) == index
-                        
+
                             if isPrevious || isCurrent || isNext {
                                 let offsetValue = cardOffsets[user.id]
                                 userProfileCell(user: user, index: index)
@@ -57,7 +51,6 @@ struct BumbleHomeView: View {
                     
                     overlaySwipingIndicators
                         .zIndex(999999)
-                    
                 }
                 .frame(maxHeight: .infinity)
                 .padding(4)
@@ -71,7 +64,7 @@ struct BumbleHomeView: View {
         .toolbar(.hidden, for: .navigationBar)
     }
     
-    private func userDidSelect (index: Int, isLike: Bool) {
+    private func userDidSelect(index: Int, isLike: Bool) {
         let user = allUsers[index]
         cardOffsets[user.id] = isLike
         
@@ -79,12 +72,10 @@ struct BumbleHomeView: View {
     }
     
     private func getData() async {
-        
         guard allUsers.isEmpty else { return }
         
         do {
             allUsers = try await DatabaseHelper().getUsers()
-            
         } catch {
             
         }
@@ -108,12 +99,12 @@ struct BumbleHomeView: View {
                     }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-                
+            
             Text("bumble")
                 .font(.title)
                 .foregroundStyle(.bumbleYellow)
                 .frame(maxWidth: .infinity, alignment: .center)
-            
+
             Image(systemName: "slider.horizontal.3")
                 .padding(8)
                 .background(Color.black.opacity(0.001))
@@ -130,36 +121,37 @@ struct BumbleHomeView: View {
     }
     
     private func userProfileCell(user: User, index: Int) -> some View {
-        
         BumbleCardView(
             user: user,
+            onSendAComplimentPressed: nil,
             onSuperLikePressed: nil,
             onXmarkPressed: {
-                userDidSelect(index: index, isLike: true)
-            },
-            onCheckMarkPressed: {
                 userDidSelect(index: index, isLike: false)
             },
-            onSendAComplimentPressed: nil,
-            onHideAndReportPressed: nil
+            onCheckmarkPressed: {
+                userDidSelect(index: index, isLike: true)
+            },
+            onHideAndReportPressed: {
+                
+            }
         )
-            .withDragGesture(
-                .horizontal,
-                minimumDistance: 10,
-                resets: true,
-                rotationMultiplier: 1.05,
-//                scaleMultiplier: 0.8,
-                onChanged: { dragOffset in
-                    currentSwipeOffset = dragOffset.width
-                },
-                onEnded: { dragOffset in
-                    if dragOffset.width < -50 {
-                        userDidSelect(index: index, isLike: false)
-                    } else if dragOffset.width > 50 {
-                        userDidSelect(index: index, isLike: true)
-                    }
+        .withDragGesture(
+            .horizontal,
+            minimumDistance: 10,
+            resets: true,
+            rotationMultiplier: 1.05,
+            //              scaleMultiplier: 0.8,
+            onChanged: { dragOffset in
+                currentSwipeOffset = dragOffset.width
+            },
+            onEnded: { dragOffset in
+                if dragOffset.width < -50 {
+                    userDidSelect(index: index, isLike: false)
+                } else if dragOffset.width > 50 {
+                    userDidSelect(index: index, isLike: true)
                 }
-            )
+            }
+        )
     }
     
     private var overlaySwipingIndicators: some View {
@@ -189,8 +181,6 @@ struct BumbleHomeView: View {
                 .offset(x: max(-currentSwipeOffset, -150))
                 .offset(x: 100)
                 .frame(maxWidth: .infinity, alignment: .trailing)
-            
-            
         }
         .animation(.smooth, value: currentSwipeOffset)
     }

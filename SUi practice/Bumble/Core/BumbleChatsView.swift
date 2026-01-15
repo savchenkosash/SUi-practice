@@ -6,13 +6,13 @@
 //
 
 import SwiftUI
-import SwiftfulRouting
 
 struct BumbleChatsView: View {
     
     @Environment(\.router) var router
+
     @State private var allUsers: [User] = []
-    
+
     var body: some View {
         ZStack {
             Color.bumbleWhite.ignoresSafeArea()
@@ -22,7 +22,9 @@ struct BumbleChatsView: View {
                     .padding(16)
                 
                 matchQueueSection
-                recentsChatsSection
+                    .padding(.vertical, 16)
+
+                recentChatsSection
             }
         }
         .task {
@@ -33,6 +35,7 @@ struct BumbleChatsView: View {
     
     private func getData() async {
         guard allUsers.isEmpty else { return }
+        
         do {
             allUsers = try await DatabaseHelper().getUsers()
         } catch {
@@ -40,21 +43,22 @@ struct BumbleChatsView: View {
         }
     }
     
+    
     private var header: some View {
         HStack(spacing: 0) {
             Image(systemName: "line.horizontal.3")
                 .onTapGesture {
                     router.dismissScreen()
                 }
-            Spacer()
+            Spacer(minLength: 0)
             Image(systemName: "magnifyingglass")
         }
         .font(.title)
         .fontWeight(.medium)
     }
-    
+
     private var matchQueueSection: some View {
-        VStack(alignment: .leading, spacing: 0) {
+        VStack(alignment: .leading, spacing: 8) {
             Group {
                 Text("Match Queue")
                 +
@@ -62,7 +66,7 @@ struct BumbleChatsView: View {
                     .foregroundStyle(.bumbleGray)
             }
             .padding(.horizontal, 16)
-            
+
             ScrollView(.horizontal) {
                 LazyHStack(spacing: 16) {
                     ForEach(allUsers) { user in
@@ -81,13 +85,13 @@ struct BumbleChatsView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
     }
     
-    private var recentsChatsSection: some View {
-        VStack(alignment: .leading, spacing: 0) {
+    private var recentChatsSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
             HStack(spacing: 0) {
                 Group {
                     Text("Chats")
                     +
-                    Text(" (Recents)")
+                    Text(" (Recent)")
                         .foregroundStyle(.bumbleGray)
                 }
                 
@@ -96,7 +100,7 @@ struct BumbleChatsView: View {
                     .font(.title2)
             }
             .padding(.horizontal, 16)
-            
+
             ScrollView(.vertical) {
                 LazyVStack(spacing: 16) {
                     ForEach(allUsers) { user in
@@ -108,7 +112,6 @@ struct BumbleChatsView: View {
                             lastChatMessage: user.aboutMe,
                             isYourMove: Bool.random()
                         )
-                        
                     }
                 }
                 .padding(16)
@@ -118,9 +121,6 @@ struct BumbleChatsView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
-
-
-
 
 #Preview {
     BumbleChatsView()
