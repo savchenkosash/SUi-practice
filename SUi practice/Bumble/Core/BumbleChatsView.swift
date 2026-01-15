@@ -6,9 +6,11 @@
 //
 
 import SwiftUI
+import SwiftfulRouting
 
 struct BumbleChatsView: View {
     
+    @Environment(\.router) var router
     @State private var allUsers: [User] = []
     
     var body: some View {
@@ -19,44 +21,10 @@ struct BumbleChatsView: View {
                 header
                     .padding(16)
                 
-                VStack(alignment: .leading, spacing: 0) {
-                    Group {
-                        Text("Match Queue")
-                        +
-                        Text(" (\(allUsers.count))")
-                            .foregroundStyle(.bumbleGray)
-                    }
-                    .padding(.horizontal, 16)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    
-                    ScrollView(.horizontal) {
-                        LazyHStack(spacing: 16) {
-                            ForEach(allUsers) { user in
-                                BumbleProfileImageCell(
-                                    imageName: user.image,
-                                    percentageRemaining: Double.random(in: 0...1),
-                                    hasNewMessage: Bool.random()
-                                )
-                            }
-                        }
-                        .padding(.horizontal, 16)
-                    }
-                    .scrollIndicators(.hidden)
-                    .frame(height: 100)
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                
-                
-                Spacer()
+                matchQueueSection
+                recentsChatsSection
             }
-            
-           
-            
         }
-        
-        
-        
-        
         .task {
             await getData()
         }
@@ -75,6 +43,9 @@ struct BumbleChatsView: View {
     private var header: some View {
         HStack(spacing: 0) {
             Image(systemName: "line.horizontal.3")
+                .onTapGesture {
+                    router.dismissScreen()
+                }
             Spacer()
             Image(systemName: "magnifyingglass")
         }
@@ -82,7 +53,70 @@ struct BumbleChatsView: View {
         .fontWeight(.medium)
     }
     
+    private var matchQueueSection: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Group {
+                Text("Match Queue")
+                +
+                Text(" (\(allUsers.count))")
+                    .foregroundStyle(.bumbleGray)
+            }
+            .padding(.horizontal, 16)
+            
+            ScrollView(.horizontal) {
+                LazyHStack(spacing: 16) {
+                    ForEach(allUsers) { user in
+                        BumbleProfileImageCell(
+                            imageName: user.images.randomElement()!,
+                            percentageRemaining: Double.random(in: 0...1),
+                            hasNewMessage: Bool.random()
+                        )
+                    }
+                }
+                .padding(.horizontal, 16)
+            }
+            .scrollIndicators(.hidden)
+            .frame(height: 100)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
     
+    private var recentsChatsSection: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            HStack(spacing: 0) {
+                Group {
+                    Text("Chats")
+                    +
+                    Text(" (Recents)")
+                        .foregroundStyle(.bumbleGray)
+                }
+                
+                Spacer(minLength: 0)
+                Image(systemName: "line.horizontal.3.decrease")
+                    .font(.title2)
+            }
+            .padding(.horizontal, 16)
+            
+            ScrollView(.vertical) {
+                LazyVStack(spacing: 16) {
+                    ForEach(allUsers) { user in
+                        BumbleChatPreviewCell(
+                            imageName: user.images.randomElement()!,
+                            percentageRemaining: Double.random(in: 0...1),
+                            hasNewMessage: Bool.random(),
+                            userName: user.firstName,
+                            lastChatMessage: user.aboutMe,
+                            isYourMove: Bool.random()
+                        )
+                        
+                    }
+                }
+                .padding(16)
+            }
+            .scrollIndicators(.hidden)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
 }
 
 
