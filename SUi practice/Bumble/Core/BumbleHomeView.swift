@@ -139,7 +139,6 @@ struct BumbleHomeView: View {
             onSendAComplimentPressed: nil,
             onHideAndReportPressed: nil
         )
-        
             .withDragGesture(
                 .horizontal,
                 minimumDistance: 10,
@@ -191,7 +190,6 @@ struct BumbleHomeView: View {
         }
         .animation(.smooth, value: currentSwipeOffset)
     }
-    
 }
 
 #Preview {
