@@ -45,8 +45,6 @@ struct NetflixFilterBarView: View {
                         .padding(.leading, 16)
                 }
                 
-
-                
                 ForEach(filters, id: \.self) { filter in
                     if selectedFilter == nil || selectedFilter == filter {
                         NetflixFilterCell(
